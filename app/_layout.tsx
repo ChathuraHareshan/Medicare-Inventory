@@ -1,37 +1,67 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { Tabs } from "expo-router";
+import React from "react";
+import { StatusBar, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ThemeProvider, useTheme } from "./context/ThemeContext";
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
+const TabIcon = ({
+  focused,
+  icon,
+  label,
+}: {
+  focused: boolean;
+  icon: string;
+  label: string;
+}) => {
+  const { theme } = useTheme();
+  
+  return (
+    <View style={styles.tabItem}>
+      <Text 
+        style={[
+          styles.tabIcon, 
+          { color: focused ? theme.tabIconFocused : theme.tabIcon }
+        ]}
+      >
+        {icon}
+      </Text>
+      <Text 
+        style={[
+          styles.tabLabel, 
+          { color: focused ? theme.tabIconFocused : theme.tabIcon }
+        ]}
+      >
+        {label}
+      </Text>
+    </View>
+  );
 };
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+function TabLayout() {
+  const { theme } = useTheme();
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#2a6f97" />
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <StatusBar 
+        barStyle={theme.statusBar} 
+        backgroundColor={theme.statusBarBg} 
+      />
+      
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarStyle: styles.tabBar,
+          tabBarStyle: [styles.tabBar, { backgroundColor: theme.tabBar }],
           tabBarShowLabel: false,
           tabBarItemStyle: styles.tabBarItem,
         }}
       >
-        {/* Splash Screen */}
         <Tabs.Screen
           name="index"
           options={{
             href: null,
           }}
         />
-        
-        {/* Home Screen */}
+
         <Tabs.Screen
           name="home"
           options={{
@@ -40,8 +70,7 @@ export default function RootLayout() {
             ),
           }}
         />
-        
-        {/* Product List Screen */}
+
         <Tabs.Screen
           name="productList"
           options={{
@@ -50,8 +79,7 @@ export default function RootLayout() {
             ),
           }}
         />
-        
-        {/* Add Product Screen */}
+
         <Tabs.Screen
           name="addProduct"
           options={{
@@ -60,35 +88,31 @@ export default function RootLayout() {
             ),
           }}
         />
-        
-        {/* Profile Screen */}
-        <Tabs.Screen
-          name="profile"
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <TabIcon focused={focused} icon="👤" label="Profile" />
-            ),
-          }}
-        />
       </Tabs>
     </SafeAreaView>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <ThemeProvider>
+      <TabLayout />
+    </ThemeProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f7fa',
   },
   tabBar: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 20,
-    left: 20,    // දෙපැත්තෙන් සමාන ඉඩ
-    right: 20,   // දෙපැත්තෙන් සමාන ඉඩ
-    backgroundColor: '#fff',
+    left: 20, 
+    right: 20, 
     borderRadius: 30,
-    height: 70,
-    shadowColor: '#000',
+    height: 60,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -96,35 +120,27 @@ const styles = StyleSheet.create({
     borderTopWidth: 0,
     paddingHorizontal: 10,
     paddingBottom: 5,
+    justifyContent: "center",
   },
   tabBarItem: {
     flex: 1,
-    paddingVertical: 7,
+    paddingVertical: 5,
   },
   tabItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: 2,
     paddingVertical: 2,
   },
   tabIcon: {
-    fontSize: 22,
+    fontSize: 20,
     marginBottom: 0,
-    color: '#8a9aa8',
-  },
-  tabIconFocused: {
-    color: '#2a6f97',
   },
   tabLabel: {
-    fontSize: 11,
-    color: '#8a9aa8',
-    fontWeight: '500',
-    textAlign: 'center',
+    fontSize: 10,
+    fontWeight: "500",
+    textAlign: "center",
     includeFontPadding: false,
     lineHeight: 14,
-  },
-  tabLabelFocused: {
-    color: '#2a6f97',
-    fontWeight: '600',
   },
 });
